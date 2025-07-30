@@ -1,0 +1,50 @@
+[workspace]
+resolver = "2"
+members = [
+    "bin/arbitrum-reth",
+    "crates/arbitrum-config",
+    "crates/arbitrum-consensus",
+    "crates/arbitrum-storage",
+    "crates/arbitrum-pool",
+    "crates/arbitrum-batch-submitter",
+    "crates/arbitrum-inbox-tracker",
+    "crates/arbitrum-validator",
+    "crates/arbitrum-node",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+repository = "https://github.com/longcipher/arbitrum-reth"
+keywords = ["ethereum", "arbitrum", "l2", "reth", "blockchain"]
+categories = ["cryptography::cryptocurrencies"]
+
+[workspace.dependencies]
+# Basic Ethereum types (minimal alloy version)
+alloy-primitives = "1.3"
+eyre = "0.6"
+
+# Reth SDK dependencies
+arbitrum-batch-submitter = { path = "crates/arbitrum-batch-submitter" }
+arbitrum-config = { path = "crates/arbitrum-config" }
+arbitrum-consensus = { path = "crates/arbitrum-consensus" }
+arbitrum-inbox-tracker = { path = "crates/arbitrum-inbox-tracker" }
+arbitrum-node = { path = "crates/arbitrum-node" }
+arbitrum-pool = { path = "crates/arbitrum-pool" }
+arbitrum-storage = { path = "crates/arbitrum-storage" }
+arbitrum-validator = { path = "crates/arbitrum-validator" }
+chrono = { version = "0.4", features = ["serde"] }
+clap = { version = "4.4", features = ["derive"] }
+reth-chainspec = { git = "https://github.com/paradigmxyz/reth" }
+reth-ethereum = { git = "https://github.com/paradigmxyz/reth" }
+reth-node-builder = { git = "https://github.com/paradigmxyz/reth" }
+reth-primitives = { git = "https://github.com/paradigmxyz/reth" }
+reth-provider = { git = "https://github.com/paradigmxyz/reth" }
+reth-tasks = { git = "https://github.com/paradigmxyz/reth" }
+serde = { version = "1.0", features = ["derive"] }
+sha3 = "0.10"
+tokio = { version = "1.0", features = ["full"] }
+toml = "0.9.4"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }

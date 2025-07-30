@@ -1,0 +1,16 @@
+[package]
+name = "arbitrum-storage"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Storage layer for Arbitrum-Reth"
+
+[dependencies]
+alloy-primitives.workspace = true
+arbitrum-config.workspace = true
+eyre.workspace = true
+tokio.workspace = true
+tracing.workspace = true

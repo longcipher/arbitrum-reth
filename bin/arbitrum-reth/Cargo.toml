@@ -1,0 +1,33 @@
+[package]
+name = "arbitrum-reth"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "A high-performance, modular Layer 2 node compatible with Arbitrum Nitro, built using the Reth SDK"
+
+[[bin]]
+name = "arbitrum-reth"
+path = "src/main.rs"
+
+[dependencies]
+arbitrum-config.workspace = true
+arbitrum-node.workspace = true
+clap.workspace = true
+eyre.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[dev-dependencies]
+assert_cmd = "2.0"
+criterion = "0.7"
+predicates = "3.0"
+proptest = "1.4"
+tempfile = "3.8"
+
+[features]
+default = []
+asm-keccak = []

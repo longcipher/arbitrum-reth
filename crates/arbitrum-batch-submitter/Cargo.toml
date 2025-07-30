@@ -1,0 +1,19 @@
+[package]
+name = "arbitrum-batch-submitter"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Batch submitter for Arbitrum-Reth"
+
+[dependencies]
+alloy-primitives.workspace = true
+arbitrum-config.workspace = true
+arbitrum-storage.workspace = true
+chrono.workspace = true
+eyre.workspace = true
+sha3.workspace = true
+tokio.workspace = true
+tracing.workspace = true

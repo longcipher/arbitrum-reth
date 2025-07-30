@@ -1,0 +1,42 @@
+[package]
+name = "arbitrum-node"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+keywords.workspace = true
+categories.workspace = true
+description = "Node for Arbitrum-Reth"
+
+[package.metadata.cargo-machete]
+ignored = [
+    "alloy-primitives",
+    "reth-ethereum",
+    "reth-node-builder",
+    "reth-primitives",
+    "reth-provider",
+    "reth-tasks",
+]
+
+[dependencies]
+# Reth SDK
+reth-chainspec = { workspace = true }
+reth-ethereum = { workspace = true }
+reth-node-builder = { workspace = true }
+reth-primitives = { workspace = true }
+reth-provider = { workspace = true }
+reth-tasks = { workspace = true }
+
+# Core dependencies
+alloy-primitives = { workspace = true }
+arbitrum-batch-submitter.workspace = true
+arbitrum-config.workspace = true
+arbitrum-consensus.workspace = true
+arbitrum-inbox-tracker.workspace = true
+arbitrum-pool.workspace = true
+arbitrum-storage.workspace = true
+arbitrum-validator.workspace = true
+chrono.workspace = true
+eyre.workspace = true
+tokio.workspace = true
+tracing.workspace = true

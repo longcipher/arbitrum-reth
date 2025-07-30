@@ -1,0 +1,51 @@
+# Arbitrum-Reth Node Configuration
+
+[node]
+chain = "arbitrum-one"
+datadir = "./data"
+sequencer_mode = false
+validator_mode = false
+archive_mode = false
+
+[l1]
+rpc_url = "https://ethereum.publicnode.com"
+ws_url = "wss://ethereum.publicnode.com"
+chain_id = 1
+confirmation_blocks = 6
+poll_interval = 2000
+start_block = 18500000
+
+[l2]
+chain_id = 42161
+block_time = 250
+max_tx_per_block = 1000
+gas_limit = 32000000
+
+[sequencer]
+enable = false
+batch_size = 100
+batch_timeout = 10000
+submit_interval = 30000
+max_batch_queue_size = 1000
+
+[validator]
+enable = false
+stake_amount = "1000000000000000000"  # 1 ETH
+challenge_period = 604800  # 7 days
+max_challenge_depth = 32
+
+[network]
+discovery_port = 30303
+listening_port = 30304
+max_peers = 50
+bootnodes = []
+enable_mdns = true
+
+[metrics]
+enable = true
+addr = "127.0.0.1:9090"
+interval = 10
+
+[logging]
+level = "info"
+format = "human"
