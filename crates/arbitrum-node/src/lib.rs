@@ -50,7 +50,7 @@ impl ArbitrumRethNode {
         info!("Storage layer initialized");
 
         // Initialize consensus engine
-        let consensus = Arc::new(ArbitrumConsensus::new(&config).await?);
+        let consensus = Arc::new(ArbitrumConsensus::new(&config, storage.clone()).await?);
         info!("Arbitrum consensus engine initialized");
 
         // Initialize transaction pool

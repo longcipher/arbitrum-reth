@@ -91,7 +91,7 @@ impl BatchSubmitter {
         debug!("Checking for batch submission");
 
         // Get the latest block number
-        let latest_block = self.storage.get_latest_block_number().await?;
+        let latest_block = self.storage.get_current_block_number().await?;
         let last_submitted = *self.last_submitted_block.read().await;
 
         // Check if we have enough blocks to submit
@@ -126,7 +126,7 @@ impl BatchSubmitter {
 
         // Store batch information
         let mut batch_with_l1_hash = batch;
-        batch_with_l1_hash.l1_tx_hash = l1_tx_hash;
+        batch_with_l1_hash.l1_tx_hash = Some(l1_tx_hash);
 
         self.storage.store_batch(&batch_with_l1_hash).await?;
 
@@ -184,19 +184,16 @@ impl BatchSubmitter {
             .expect("Blocks vector should not be empty")
             .number;
 
-        // Calculate batch root (simplified - in real implementation this would be a Merkle root)
-        let batch_root = self.calculate_batch_root(&blocks).await?;
-
         // Get the next batch number
         let batch_number = self.get_next_batch_number().await?;
 
         Ok(ArbitrumBatch {
             batch_number,
-            l1_tx_hash: B256::ZERO, // Will be filled after L1 submission
-            start_block,
-            end_block,
-            batch_root,
+            block_range: (start_block, end_block),
+            l1_block_number: 0, // Will be set when submitted to L1
             timestamp: chrono::Utc::now().timestamp() as u64,
+            transactions: blocks.iter().flat_map(|b| b.transactions.clone()).collect(),
+            l1_tx_hash: None, // Will be filled after L1 submission
         })
     }
 
@@ -244,7 +241,7 @@ impl BatchSubmitter {
     /// Get batch submission statistics
     pub async fn get_stats(&self) -> BatchSubmitterStats {
         let last_submitted = *self.last_submitted_block.read().await;
-        let latest_block = self.storage.get_latest_block_number().await.unwrap_or(0);
+        let latest_block = self.storage.get_current_block_number().await.unwrap_or(0);
 
         BatchSubmitterStats {
             last_submitted_block: last_submitted,
@@ -265,7 +262,7 @@ impl BatchSubmitter {
     /// Check if the submitter should submit a batch based on size
     #[allow(dead_code)]
     async fn should_submit_by_size(&self) -> bool {
-        let latest_block = self.storage.get_latest_block_number().await.unwrap_or(0);
+        let latest_block = self.storage.get_current_block_number().await.unwrap_or(0);
         let last_submitted = *self.last_submitted_block.read().await;
         let pending_blocks = latest_block.saturating_sub(last_submitted);
 

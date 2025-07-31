@@ -6,12 +6,21 @@ license.workspace = true
 repository.workspace = true
 keywords.workspace = true
 categories.workspace = true
-description = "Consensus mechanisms for Arbitrum-Reth"
+description = "Consensus engine for Arbitrum-Reth"
 
 [dependencies]
 alloy-primitives.workspace = true
 arbitrum-config.workspace = true
+arbitrum-storage = { workspace = true }
 eyre.workspace = true
-sha3.workspace = true
 tokio.workspace = true
 tracing.workspace = true
+
+# Cryptography
+sha3 = { workspace = true }
+
+# Utilities
+# chrono = { version = "0.4", features = ["serde"] }  # Removed: not used
+
+[dev-dependencies]
+tempfile = { workspace = true }

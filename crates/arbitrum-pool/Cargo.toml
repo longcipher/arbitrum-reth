@@ -11,7 +11,8 @@ description = "Transaction pool for Arbitrum-Reth"
 [dependencies]
 alloy-primitives.workspace = true
 arbitrum-config.workspace = true
-arbitrum-consensus.workspace = true
+# arbitrum-consensus.workspace = true  # Removed: not used
+arbitrum-storage.workspace = true
 eyre.workspace = true
 tokio.workspace = true
 tracing.workspace = true

@@ -198,7 +198,7 @@ impl Validator {
         // For now, return a dummy result
         Ok(BatchExecutionResult {
             batch_number: batch.batch_number,
-            batch_root: batch.batch_root,
+            batch_root: self.calculate_batch_root(batch).await?,
             transaction_results: vec![],
             gas_used: 0,
             state_root: B256::ZERO,
@@ -213,11 +213,22 @@ impl Validator {
         // TODO: Get the committed state from L1 or local storage
         Ok(BatchExecutionResult {
             batch_number: batch.batch_number,
-            batch_root: batch.batch_root,
+            batch_root: B256::ZERO, // Calculate proper batch root
             transaction_results: vec![],
             gas_used: 0,
             state_root: B256::ZERO,
         })
+    }
+
+    /// Calculate batch root hash from batch transactions
+    async fn calculate_batch_root(&self, batch: &ArbitrumBatch) -> Result<B256> {
+        // TODO: Implement proper Merkle root calculation
+        // For now, return a hash based on batch number and transaction count
+        use sha3::{Digest, Keccak256};
+        let mut hasher = Keccak256::new();
+        hasher.update(batch.batch_number.to_be_bytes());
+        hasher.update((batch.transactions.len() as u64).to_be_bytes());
+        Ok(B256::from_slice(&hasher.finalize()[..]))
     }
 
     /// Check if we should challenge a batch

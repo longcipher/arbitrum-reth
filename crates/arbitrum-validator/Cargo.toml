@@ -16,3 +16,6 @@ chrono.workspace = true
 eyre.workspace = true
 tokio.workspace = true
 tracing.workspace = true
+
+# Cryptography
+sha3 = { workspace = true }

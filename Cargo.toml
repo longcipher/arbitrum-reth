@@ -22,7 +22,7 @@ categories = ["cryptography::cryptocurrencies"]
 
 [workspace.dependencies]
 # Basic Ethereum types (minimal alloy version)
-alloy-primitives = "1.3"
+alloy-primitives = { version = "1.3", features = ["serde"] }
 eyre = "0.6"
 
 # Reth SDK dependencies
@@ -34,16 +34,20 @@ arbitrum-node = { path = "crates/arbitrum-node" }
 arbitrum-pool = { path = "crates/arbitrum-pool" }
 arbitrum-storage = { path = "crates/arbitrum-storage" }
 arbitrum-validator = { path = "crates/arbitrum-validator" }
+bincode = "1.3"
 chrono = { version = "0.4", features = ["serde"] }
 clap = { version = "4.4", features = ["derive"] }
+heed = "0.20"
 reth-chainspec = { git = "https://github.com/paradigmxyz/reth" }
 reth-ethereum = { git = "https://github.com/paradigmxyz/reth" }
 reth-node-builder = { git = "https://github.com/paradigmxyz/reth" }
 reth-primitives = { git = "https://github.com/paradigmxyz/reth" }
 reth-provider = { git = "https://github.com/paradigmxyz/reth" }
 reth-tasks = { git = "https://github.com/paradigmxyz/reth" }
+rlp = "0.6"
 serde = { version = "1.0", features = ["derive"] }
 sha3 = "0.10"
+tempfile = "3.0"
 tokio = { version = "1.0", features = ["full"] }
 toml = "0.9.4"
 tracing = "0.1"

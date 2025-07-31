@@ -7,7 +7,7 @@ use std::{
 
 use alloy_primitives::{Address, B256, U256};
 use arbitrum_config::ArbitrumRethConfig;
-use arbitrum_consensus::ArbitrumTransaction;
+use arbitrum_storage::{ArbitrumTransaction, L1Message};
 use eyre::Result;
 use tokio::sync::RwLock;
 use tracing::{debug, info};
@@ -231,17 +231,6 @@ impl ArbitrumTransactionPool {
 
         Ok(())
     }
-}
-
-/// Represents an L1 message in the transaction pool
-#[derive(Debug, Clone)]
-pub struct L1Message {
-    pub message_number: u64,
-    pub sender: Address,
-    pub data: Vec<u8>,
-    pub timestamp: u64,
-    pub block_number: u64,
-    pub gas_limit: u64,
 }
 
 /// Transaction pool statistics

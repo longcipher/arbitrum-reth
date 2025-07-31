@@ -14,3 +14,14 @@ arbitrum-config.workspace = true
 eyre.workspace = true
 tokio.workspace = true
 tracing.workspace = true
+
+# Database - using heed instead of mdbx for better Rust support
+heed = { workspace = true }
+
+# Serialization
+bincode = { workspace = true }
+rlp = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+
+[dev-dependencies]
+tempfile = { workspace = true }
