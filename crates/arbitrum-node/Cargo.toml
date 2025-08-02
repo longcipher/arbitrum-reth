@@ -38,5 +38,6 @@ arbitrum-storage.workspace = true
 arbitrum-validator.workspace = true
 chrono.workspace = true
 eyre.workspace = true
+hex = "0.4"
 tokio.workspace = true
 tracing.workspace = true

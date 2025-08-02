@@ -58,7 +58,7 @@ impl ArbitrumRethNode {
         info!("Arbitrum transaction pool initialized");
 
         // Initialize batch submitter if sequencer mode is enabled
-        let batch_submitter = if config.sequencer.enable {
+        let batch_submitter = if config.sequencer.enabled {
             let submitter = Arc::new(BatchSubmitter::new(&config, Arc::clone(&storage)).await?);
             info!("Batch submitter initialized");
             Some(submitter)

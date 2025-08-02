@@ -14,6 +14,8 @@ pub struct ArbitrumRethConfig {
     pub network: NetworkConfig,
     pub metrics: MetricsConfig,
     pub logging: LoggingConfig,
+    pub gas: GasConfig,
+    pub rpc: RpcConfig,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -45,11 +47,26 @@ pub struct L2Config {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SequencerConfig {
-    pub enable: bool,
+    pub enabled: bool,
     pub batch_size: usize,
     pub batch_timeout: u64,
     pub submit_interval: u64,
     pub max_batch_queue_size: usize,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct GasConfig {
+    pub l1_base_fee: u64,
+    pub l2_gas_price: u64,
+    pub price_update_interval: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RpcConfig {
+    pub port: u16,
+    pub ws_port: u16,
+    pub enable_ws: bool,
+    pub cors_origins: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -108,7 +125,7 @@ impl Default for ArbitrumRethConfig {
                 gas_limit: 32_000_000,
             },
             sequencer: SequencerConfig {
-                enable: false,
+                enabled: false,
                 batch_size: 100,
                 batch_timeout: 10_000,
                 submit_interval: 30_000,
@@ -136,6 +153,17 @@ impl Default for ArbitrumRethConfig {
                 level: "info".to_string(),
                 format: "human".to_string(),
                 file: None,
+            },
+            gas: GasConfig {
+                l1_base_fee: 20_000_000_000, // 20 gwei
+                l2_gas_price: 100_000_000,   // 0.1 gwei
+                price_update_interval: 10,    // 10 seconds
+            },
+            rpc: RpcConfig {
+                port: 8545,
+                ws_port: 8546,
+                enable_ws: true,
+                cors_origins: vec!["*".to_string()],
             },
         }
     }
@@ -170,7 +198,7 @@ impl ArbitrumRethConfig {
         }
 
         // Validate sequencer configuration
-        if self.sequencer.enable && self.sequencer.batch_size == 0 {
+        if self.sequencer.enabled && self.sequencer.batch_size == 0 {
             eyre::bail!("Sequencer batch size cannot be zero");
         }
 

@@ -1009,6 +1009,7 @@ dependencies = [
  "arbitrum-validator",
  "chrono",
  "eyre",
+ "hex",
  "reth-chainspec",
  "reth-ethereum",
  "reth-node-builder",
