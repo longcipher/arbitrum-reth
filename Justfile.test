@@ -1,0 +1,397 @@
+# 测试脚本和工具
+
+# RPC 兼容性测试器
+rpc-compatibility-test:
+    #!/usr/bin/env bash
+    echo "🔍 Starting RPC compatibility test..."
+    cargo run --bin rpc-compatibility-tester -- \
+        --nitro-endpoint http://localhost:8547 \
+        --reth-endpoint http://localhost:8548 \
+        --test-suite full \
+        --report-format json \
+        --output ./reports/rpc-compatibility-$(date +%Y%m%d-%H%M%S).json
+
+# 性能基准测试
+benchmark-performance:
+    #!/usr/bin/env bash
+    echo "⚡ Starting performance benchmark..."
+    mkdir -p reports benchmarks
+    cargo run --release --bin performance-benchmark -- \
+        --duration 3600 \
+        --report-interval 60 \
+        --output ./reports/performance-$(date +%Y%m%d).json \
+        --nitro-endpoint http://localhost:8547 \
+        --reth-endpoint http://localhost:8548
+
+# 数据一致性验证
+data-consistency-check:
+    #!/usr/bin/env bash
+    echo "📊 Verifying data consistency..."
+    cargo run --bin data-consistency-checker -- \
+        --nitro-datadir ./test-data/nitro \
+        --reth-datadir ./test-data/reth \
+        --start-block 0 \
+        --end-block 10000 \
+        --output ./reports/consistency-$(date +%Y%m%d).json
+
+# 网络同步测试
+sync-test:
+    #!/usr/bin/env bash
+    echo "🔄 Testing network synchronization..."
+    cargo run --bin sync-tester -- \
+        --network arbitrum-sepolia \
+        --checkpoint-interval 1000 \
+        --validate-state true \
+        --timeout 7200 \
+        --output ./reports/sync-test-$(date +%Y%m%d).json
+
+# 完整兼容性测试套件
+test-compatibility-suite:
+    #!/usr/bin/env bash
+    echo "🚀 Running full compatibility test suite..."
+    
+    # 确保目录存在
+    mkdir -p reports logs test-data/{nitro,reth}
+    
+    echo "Step 1: Basic functionality tests"
+    cargo test --workspace --release -- --nocapture 2>&1 | tee logs/unit-tests-$(date +%Y%m%d).log
+    
+    echo "Step 2: RPC compatibility"
+    just rpc-compatibility-test
+    
+    echo "Step 3: Data consistency"
+    just data-consistency-check
+    
+    echo "Step 4: Performance benchmark"
+    just benchmark-performance
+    
+    echo "Step 5: Sync test"
+    just sync-test
+    
+    echo "✅ Compatibility test suite completed"
+    echo "📈 Reports available in ./reports/"
+
+# 设置测试环境
+test-env-setup:
+    #!/usr/bin/env bash
+    echo "🛠️  Setting up test environment..."
+    
+    # 创建必要的目录
+    mkdir -p {test-data,reports,logs,benchmarks,compatibility}
+    mkdir -p test-data/{nitro,reth}
+    mkdir -p {tests/integration,tests/compatibility,tests/performance}
+    
+    # 下载 Nitro 参考实现（如果不存在）
+    if [ ! -d "nitro-reference" ]; then
+        echo "📥 Downloading Nitro reference implementation..."
+        git clone https://github.com/OffchainLabs/nitro.git nitro-reference
+        cd nitro-reference
+        git checkout $(git describe --tags --abbrev=0) # 最新稳定版本
+        cd ..
+    fi
+    
+    # 创建测试配置文件
+    just create-test-configs
+    
+    echo "✅ Test environment setup completed"
+
+# 创建测试配置文件
+create-test-configs:
+    #!/usr/bin/env bash
+    echo "📝 Creating test configuration files..."
+    
+    # RPC 兼容性测试配置
+    cat > test-configs/rpc-compatibility.toml << 'EOF'
+[test]
+nitro_endpoint = "http://localhost:8547"
+reth_endpoint = "http://localhost:8548"
+timeout_seconds = 30
+parallel_requests = 10
+retry_attempts = 3
+
+[rpc_methods]
+# 基础 Ethereum RPC 方法
+ethereum_methods = [
+    "eth_blockNumber",
+    "eth_getBalance",
+    "eth_getTransactionCount", 
+    "eth_getBlockByNumber",
+    "eth_getBlockByHash",
+    "eth_getTransactionByHash",
+    "eth_getTransactionReceipt",
+    "eth_call",
+    "eth_estimateGas",
+    "eth_sendRawTransaction"
+]
+
+# Arbitrum 扩展方法
+arbitrum_methods = [
+    "arb_getL1Confirmations",
+    "arb_estimateComponents", 
+    "arb_getL2ToL1Proof",
+    "arb_findL2ToL1Messages"
+]
+
+[validation]
+# 验证规则
+strict_response_matching = true
+allow_timestamp_variance = 5  # 秒
+allow_gas_estimation_variance = 0.1  # 10%
+EOF
+
+    # 性能测试配置
+    cat > test-configs/performance.toml << 'EOF'
+[benchmark]
+duration_seconds = 3600
+warmup_seconds = 300
+report_interval_seconds = 60
+
+[targets]
+# 性能目标
+target_tps = 2000
+max_latency_p95_ms = 100
+max_memory_gb = 4
+max_cpu_percent = 80
+
+[workload]
+# 测试负载配置
+transaction_types = ["transfer", "contract_call", "contract_deploy"]
+transaction_mix = [70, 25, 5]  # 百分比
+concurrent_users = 100
+ramp_up_seconds = 60
+EOF
+
+    # 数据一致性测试配置  
+    cat > test-configs/consistency.toml << 'EOF'
+[validation]
+# 数据验证设置
+validate_blocks = true
+validate_transactions = true
+validate_receipts = true
+validate_state = true
+validate_logs = true
+
+[sampling]
+# 采样策略
+sample_every_n_blocks = 100
+random_sample_percentage = 1.0
+focus_recent_blocks = 1000
+
+[tolerance]
+# 容差设置
+timestamp_variance_seconds = 1
+gas_variance_percentage = 0.01
+balance_variance_wei = "0"
+EOF
+
+    echo "✅ Test configuration files created"
+
+# 启动本地测试网络
+start-local-testnet:
+    #!/usr/bin/env bash
+    echo "🌐 Starting local test network..."
+    
+    # 使用 Docker Compose 启动测试环境
+    if [ ! -f "docker-compose.test.yml" ]; then
+        just create-docker-test-config
+    fi
+    
+    docker-compose -f docker-compose.test.yml up -d
+    
+    echo "⏳ Waiting for nodes to start..."
+    sleep 30
+    
+    # 验证节点启动
+    echo "🔍 Checking node health..."
+    curl -s http://localhost:8547/health || echo "❌ Nitro node not responding"
+    curl -s http://localhost:8548/health || echo "❌ Reth node not responding"
+    
+    echo "✅ Local test network started"
+
+# 创建 Docker 测试配置
+create-docker-test-config:
+    #!/usr/bin/env bash
+    echo "🐳 Creating Docker test configuration..."
+    
+    cat > docker-compose.test.yml << 'EOF'
+version: '3.8'
+
+services:
+  nitro-node:
+    image: offchainlabs/nitro-node:latest
+    ports:
+      - "8547:8547"
+      - "8548:8548"
+    volumes:
+      - ./test-data/nitro:/data
+    environment:
+      - LOG_LEVEL=info
+    command: |
+      --conf.file=/data/config.json
+      --node.rpc.addr=0.0.0.0
+      --node.rpc.port=8547
+      --node.ws.addr=0.0.0.0  
+      --node.ws.port=8548
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8547/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  arbitrum-reth:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8549:8547"
+      - "8550:8548"
+    volumes:
+      - ./test-data/reth:/data
+    environment:
+      - LOG_LEVEL=info
+      - RUST_LOG=info
+    command: |
+      --datadir /data
+      --rpc-addr 0.0.0.0
+      --rpc-port 8547
+      --ws-addr 0.0.0.0
+      --ws-port 8548
+      --metrics
+      --metrics-addr 0.0.0.0:9090
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8547/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - nitro-node
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    volumes:
+      - ./reports:/reports
+      - ./test-configs:/test-configs
+    environment:
+      - NITRO_ENDPOINT=http://nitro-node:8547
+      - RETH_ENDPOINT=http://arbitrum-reth:8547
+    depends_on:
+      - nitro-node
+      - arbitrum-reth
+    profiles:
+      - test
+
+networks:
+  default:
+    driver: bridge
+EOF
+
+    echo "✅ Docker test configuration created"
+
+# 停止测试网络
+stop-local-testnet:
+    #!/usr/bin/env bash
+    echo "🛑 Stopping local test network..."
+    docker-compose -f docker-compose.test.yml down -v
+    echo "✅ Local test network stopped"
+
+# 生成测试报告
+generate-test-report:
+    #!/usr/bin/env bash
+    echo "📊 Generating comprehensive test report..."
+    
+    mkdir -p reports/html
+    
+    # 运行报告生成器
+    cargo run --bin report-generator -- \
+        --input-dir ./reports \
+        --output-dir ./reports/html \
+        --format html \
+        --include-charts true
+    
+    echo "✅ Test report generated: ./reports/html/index.html"
+
+# 清理测试数据
+clean-test-data:
+    #!/usr/bin/env bash
+    echo "🧹 Cleaning test data..."
+    rm -rf test-data/* reports/* logs/*
+    docker system prune -f
+    echo "✅ Test data cleaned"
+
+# 运行回归测试
+regression-test:
+    #!/usr/bin/env bash
+    echo "🔄 Running regression tests..."
+    
+    # 保存当前结果为基准
+    if [ ! -f "reports/baseline.json" ]; then
+        echo "📊 Creating baseline..."
+        just test-compatibility-suite
+        cp reports/performance-$(date +%Y%m%d).json reports/baseline.json
+    fi
+    
+    # 运行当前测试
+    just test-compatibility-suite
+    
+    # 对比结果
+    cargo run --bin regression-checker -- \
+        --baseline reports/baseline.json \
+        --current reports/performance-$(date +%Y%m%d).json \
+        --output reports/regression-$(date +%Y%m%d).json
+    
+    echo "✅ Regression test completed"
+
+# 运行压力测试
+stress-test:
+    #!/usr/bin/env bash
+    echo "💪 Starting stress test..."
+    
+    cargo run --release --bin stress-tester -- \
+        --duration 7200 \
+        --max-tps 5000 \
+        --ramp-up 300 \
+        --output ./reports/stress-test-$(date +%Y%m%d).json
+    
+    echo "✅ Stress test completed"
+
+# 验证内存泄漏
+memory-leak-test:
+    #!/usr/bin/env bash
+    echo "🔍 Testing for memory leaks..."
+    
+    # 使用 valgrind 或 sanitizers 进行内存泄漏检测
+    RUSTFLAGS="-Z sanitizer=address" cargo test --target x86_64-unknown-linux-gnu
+    
+    # 长时间运行测试
+    cargo run --release --bin memory-monitor -- \
+        --duration 14400 \
+        --interval 60 \
+        --output ./reports/memory-$(date +%Y%m%d).json
+    
+    echo "✅ Memory leak test completed"
+
+# 快速验证（CI 用）
+quick-verify:
+    #!/usr/bin/env bash
+    echo "⚡ Running quick verification..."
+    
+    # 快速单元测试
+    cargo test --workspace --release -- --test-threads=4
+    
+    # 基础功能测试
+    timeout 300 cargo run --release --bin arbitrum-reth -- \
+        --datadir ./test-data/quick \
+        --config test-configs/quick.toml &
+    
+    sleep 10
+    
+    # 基础 RPC 测试
+    curl -X POST -H "Content-Type: application/json" \
+        --data '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":1}' \
+        http://localhost:8548 || echo "❌ RPC test failed"
+    
+    pkill arbitrum-reth
+    
+    echo "✅ Quick verification completed"

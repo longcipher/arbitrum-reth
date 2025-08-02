@@ -1,0 +1,102 @@
+# 测试配置文件
+
+[test]
+# 基础测试配置
+timeout_seconds = 30
+parallel_requests = 10
+retry_attempts = 3
+
+[endpoints]
+# 节点端点配置
+nitro_rpc = "http://localhost:8547"
+reth_rpc = "http://localhost:8548"
+nitro_ws = "ws://localhost:8548"
+reth_ws = "ws://localhost:8549"
+
+[rpc_methods]
+# 要测试的 RPC 方法
+ethereum_methods = [
+    "eth_blockNumber",
+    "eth_getBalance", 
+    "eth_getTransactionCount",
+    "eth_getBlockByNumber",
+    "eth_getBlockByHash",
+    "eth_getTransactionByHash",
+    "eth_getTransactionReceipt",
+    "eth_call",
+    "eth_estimateGas",
+    "eth_sendRawTransaction",
+    "eth_getLogs",
+    "eth_getCode",
+    "eth_getStorageAt",
+    "eth_chainId",
+    "eth_gasPrice",
+    "eth_maxPriorityFeePerGas",
+    "eth_feeHistory"
+]
+
+arbitrum_methods = [
+    "arb_getL1Confirmations",
+    "arb_estimateComponents",
+    "arb_getL2ToL1Proof", 
+    "arb_findL2ToL1Messages",
+    "arb_getL1BaseFee"
+]
+
+[validation]
+# 验证规则
+strict_response_matching = true
+allow_timestamp_variance = 5  # 秒
+allow_gas_estimation_variance = 0.1  # 10%
+allow_balance_variance = "0"  # wei
+
+[performance]
+# 性能测试配置
+target_tps = 1000
+max_latency_p95_ms = 100
+max_memory_gb = 4
+max_cpu_percent = 80
+test_duration_seconds = 3600
+warmup_seconds = 300
+report_interval_seconds = 60
+
+[workload]
+# 工作负载配置  
+transaction_types = ["transfer", "contract_call", "contract_deploy"]
+transaction_mix = [70, 25, 5]  # 百分比
+concurrent_users = 100
+ramp_up_seconds = 60
+
+[consistency]
+# 数据一致性检查
+validate_blocks = true
+validate_transactions = true
+validate_receipts = true
+validate_state = true
+validate_logs = true
+
+[sampling]
+# 采样策略
+sample_every_n_blocks = 100
+random_sample_percentage = 1.0
+focus_recent_blocks = 1000
+
+[tolerance]
+# 容差设置
+timestamp_variance_seconds = 1
+gas_variance_percentage = 0.01
+balance_variance_wei = "0"
+
+[reporting]
+# 报告设置
+output_format = "json"
+include_charts = true
+save_raw_data = false
+compress_reports = true
+
+[ci]
+# CI/CD 配置
+quick_test_duration = 60
+basic_test_duration = 300
+full_test_duration = 3600
+max_test_failures = 5
