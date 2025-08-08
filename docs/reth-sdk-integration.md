@@ -1,5 +1,7 @@
 # Arbitrum-Reth Reth SDK Integration Guide
 
+Note: This guide focuses on patterns and wiring. For hands-on snippets and Cargo setup, see also: reth-sdk-usage.md.
+
 This document describes how to integrate Arbitrum-Reth with the official Reth SDK to implement a high-performance L2 node.
 
 ## Overview

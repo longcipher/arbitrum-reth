@@ -1,0 +1,6 @@
+[
+  { "method": "eth_getBlockByNumber", "params": ["latest", false] },
+  { "method": "eth_getBlockByNumber", "params": ["0x1", false] },
+  { "method": "eth_getBlockByNumber", "params": ["0x2", true] },
+  { "method": "eth_blockNumber", "params": [] }
+]

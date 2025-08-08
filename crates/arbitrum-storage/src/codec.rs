@@ -91,6 +91,12 @@ impl DatabaseKey for keys::MetadataKey {
     }
 }
 
+impl DatabaseKey for keys::FilterId {
+    fn encode(&self) -> Result<Vec<u8>> {
+        Ok(self.0.to_be_bytes().to_vec())
+    }
+}
+
 // Implement DatabaseValue for primitive types
 
 impl DatabaseValue for u64 {
@@ -375,6 +381,33 @@ pub struct L1Message {
     pub block_number: u64,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Log {
+    pub address: Address,
+    pub topics: Vec<B256>,
+    pub data: Vec<u8>,
+    pub block_hash: Option<B256>,
+    pub block_number: Option<u64>,
+    pub transaction_hash: Option<B256>,
+    pub transaction_index: Option<u64>,
+    pub log_index: Option<u64>,
+    pub removed: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ArbitrumReceipt {
+    pub transaction_hash: B256,
+    pub transaction_index: u64,
+    pub block_hash: B256,
+    pub block_number: u64,
+    pub cumulative_gas_used: u64,
+    pub gas_used: u64,
+    pub contract_address: Option<Address>,
+    pub logs: Vec<Log>,
+    pub status: u64,
+    pub effective_gas_price: U256,
+}
+
 // DatabaseValue implementations for Arbitrum types
 impl DatabaseValue for ArbitrumBlock {
     fn encode(&self) -> Result<Vec<u8>> {
@@ -429,5 +462,39 @@ impl DatabaseValue for L1Message {
 
     fn decode(data: &[u8]) -> Result<Self> {
         bincode::deserialize(data).context("Failed to deserialize L1Message")
+    }
+}
+
+impl DatabaseValue for Log {
+    fn encode(&self) -> Result<Vec<u8>> {
+        let encoded = bincode::serialize(self).context("Failed to serialize Log")?;
+        Ok(encoded)
+    }
+
+    fn decode(data: &[u8]) -> Result<Self> {
+        bincode::deserialize(data).context("Failed to deserialize Log")
+    }
+}
+
+impl DatabaseValue for ArbitrumReceipt {
+    fn encode(&self) -> Result<Vec<u8>> {
+        let encoded = bincode::serialize(self).context("Failed to serialize ArbitrumReceipt")?;
+        Ok(encoded)
+    }
+
+    fn decode(data: &[u8]) -> Result<Self> {
+        bincode::deserialize(data).context("Failed to deserialize ArbitrumReceipt")
+    }
+}
+
+// Collections
+impl DatabaseValue for Vec<Log> {
+    fn encode(&self) -> Result<Vec<u8>> {
+        let encoded = bincode::serialize(self).context("Failed to serialize Vec<Log>")?;
+        Ok(encoded)
+    }
+
+    fn decode(data: &[u8]) -> Result<Self> {
+        bincode::deserialize(data).context("Failed to deserialize Vec<Log>")
     }
 }

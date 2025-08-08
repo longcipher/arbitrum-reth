@@ -52,6 +52,12 @@ pub struct DatabaseTables {
     l1_messages: Database<Bytes, Bytes>,
     /// Metadata and statistics
     metadata: Database<Bytes, Bytes>,
+    /// Filter cursors indexed by filter id
+    filter_cursors: Database<Bytes, Bytes>,
+    /// Logs index per block number
+    logs_by_block: Database<Bytes, Bytes>,
+    /// Filter last-seen timestamps (epoch millis)
+    filter_last_seen: Database<Bytes, Bytes>,
 }
 
 impl ArbitrumDatabase {
@@ -62,7 +68,7 @@ impl ArbitrumDatabase {
     /// * `max_size` - Maximum database size in bytes
     ///
     /// # Example
-    /// ```rust
+    /// ```rust,ignore
     /// use arbitrum_storage::database::ArbitrumDatabase;
     ///
     /// let db = ArbitrumDatabase::new("./data", 10 * 1024 * 1024 * 1024).await?; // 10GB
@@ -136,6 +142,15 @@ impl ArbitrumDatabase {
             metadata: env
                 .create_database(&mut wtxn, Some("metadata"))
                 .context("Failed to create metadata table")?,
+            filter_cursors: env
+                .create_database(&mut wtxn, Some("filter_cursors"))
+                .context("Failed to create filter_cursors table")?,
+            logs_by_block: env
+                .create_database(&mut wtxn, Some("logs_by_block"))
+                .context("Failed to create logs_by_block table")?,
+            filter_last_seen: env
+                .create_database(&mut wtxn, Some("filter_last_seen"))
+                .context("Failed to create filter_last_seen table")?,
         };
 
         wtxn.commit().context("Failed to commit table creation")?;
@@ -150,7 +165,7 @@ impl ArbitrumDatabase {
     /// * `operation` - Closure that performs the read operation
     ///
     /// # Example
-    /// ```rust
+    /// ```rust,ignore
     /// let value = db.read(|txn, tables| tables.blocks.get(txn, &key)).await?;
     /// ```
     pub async fn read<F, R>(&self, operation: F) -> Result<R>
@@ -171,6 +186,9 @@ impl ArbitrumDatabase {
                 batches: tables_guard.batches,
                 l1_messages: tables_guard.l1_messages,
                 metadata: tables_guard.metadata,
+                filter_cursors: tables_guard.filter_cursors,
+                logs_by_block: tables_guard.logs_by_block,
+                filter_last_seen: tables_guard.filter_last_seen,
             }
         };
 
@@ -189,7 +207,7 @@ impl ArbitrumDatabase {
     /// * `operation` - Closure that performs the write operation
     ///
     /// # Example
-    /// ```rust
+    /// ```rust,ignore
     /// db.write(|txn, tables| tables.blocks.put(txn, &key, &value))
     ///     .await?;
     /// ```
@@ -211,6 +229,9 @@ impl ArbitrumDatabase {
                 batches: tables_guard.batches,
                 l1_messages: tables_guard.l1_messages,
                 metadata: tables_guard.metadata,
+                filter_cursors: tables_guard.filter_cursors,
+                logs_by_block: tables_guard.logs_by_block,
+                filter_last_seen: tables_guard.filter_last_seen,
             }
         };
 
@@ -315,6 +336,9 @@ impl ArbitrumDatabase {
             TableType::Batches => &tables.batches,
             TableType::L1Messages => &tables.l1_messages,
             TableType::Metadata => &tables.metadata,
+            TableType::FilterCursors => &tables.filter_cursors,
+            TableType::LogsByBlock => &tables.logs_by_block,
+            TableType::FilterLastSeen => &tables.filter_last_seen,
         }
     }
 

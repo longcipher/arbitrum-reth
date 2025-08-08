@@ -438,7 +438,7 @@ mod tests {
         let mut config = ArbitrumRethConfig::default();
         config.node.datadir = temp_dir.path().to_path_buf();
 
-        let mut storage = ArbitrumStorage::new(&config).await.unwrap();
+        let storage = ArbitrumStorage::new(&config).await.unwrap();
         storage.start().await.unwrap();
         let storage = Arc::new(storage);
 

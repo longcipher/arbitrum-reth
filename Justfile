@@ -42,6 +42,10 @@ build-quick:
 run *args:
   cargo run --bin arbitrum-reth -- {{args}}
 
+# Run the parity harness
+parity *args:
+  cargo run --bin arbitrum-parity -- {{args}}
+
 # Run the demo
 demo:
   rustc demo.rs && ./demo

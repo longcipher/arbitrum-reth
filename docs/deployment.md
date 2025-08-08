@@ -260,6 +260,8 @@ http_api = ["eth", "net", "web3", "arb"]
 ws_enabled = true
 ws_addr = "0.0.0.0"
 ws_port = 8546
+## Filter TTL (in milliseconds) for eth_newFilter/eth_getFilterChanges; 0 => default (5 minutes)
+filter_ttl_ms = 0
 
 [metrics]
 enable = true

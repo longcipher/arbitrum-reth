@@ -5,7 +5,8 @@ Congratulations! I have created a complete testing and verification framework fo
 ## 📦 Created Testing Tools
 
 ### 1. Core Testing Tools
-```
+
+```text
 tests/
 ├── rpc_compatibility_tester.rs    # RPC API compatibility tester
 ├── performance_benchmark.rs       # Performance benchmark tool
@@ -13,13 +14,15 @@ tests/
 ```
 
 ### 2. Automation Scripts
-```
+
+```text
 scripts/
 └── quick-verify.sh                # One-click verification script (executable)
 ```
 
 ### 3. Configuration Files
-```
+
+```text
 test-configs/
 └── compatibility.toml             # Test configuration file
 
@@ -28,14 +31,17 @@ test-configs/
 ```
 
 ### 4. Documentation Guides
-```
+
+```text
 docs/
-├── testing-guide.md               # Complete testing guide
+├── testing-guide-en.md            # Complete testing guide
 └── testing-checklist.md           # Testing checklist
 ```
 
 ### 5. Just Command Integration
+
 Added testing commands in `Justfile`:
+
 - `just test-env-setup`
 - `just test-compatibility`
 - `just benchmark-performance`
@@ -44,6 +50,7 @@ Added testing commands in `Justfile`:
 ## 🚀 Start Testing Immediately
 
 ### Method 1: Using Quick Verification Script (Recommended)
+
 ```bash
 # 1-minute quick verification
 ./scripts/quick-verify.sh --quick
@@ -56,6 +63,7 @@ Added testing commands in `Justfile`:
 ```
 
 ### Method 2: Using Just Commands
+
 ```bash
 # Setup test environment
 just test-env-setup
@@ -68,6 +76,7 @@ just benchmark-performance
 ```
 
 ### Method 3: Manual Testing Tools
+
 ```bash
 # Build test tools
 cargo build --release --tests
@@ -85,6 +94,7 @@ cargo run --test data_consistency_checker -- --help
 ## 📋 Phased Testing Plan
 
 ### Phase 1: Basic Functionality Verification (This Week)
+
 ```bash
 # Quick verification of basic functionality
 ./scripts/quick-verify.sh --quick
@@ -97,6 +107,7 @@ cargo run --test data_consistency_checker -- --help
 ```
 
 ### Phase 2: Component Testing (Next Week)
+
 ```bash
 # Test individual components
 cargo test --package arbitrum-pool
@@ -109,6 +120,7 @@ cargo test --package arbitrum-batch-submitter
 ```
 
 ### Phase 3: Protocol Compatibility (Week 3)
+
 ```bash
 # Complete RPC API testing
 ./scripts/quick-verify.sh --rpc --duration 1800
@@ -119,6 +131,7 @@ cargo run --test data_consistency_checker -- \
 ```
 
 ### Phase 4: Performance Verification (Week 4)
+
 ```bash
 # Performance benchmark testing
 ./scripts/quick-verify.sh --performance --duration 3600 --tps 2000
@@ -128,6 +141,7 @@ cargo run --test data_consistency_checker -- \
 ```
 
 ### Phase 5: Network Integration (Week 5)
+
 ```bash
 # Real network testing (requires real Nitro node)
 ./scripts/quick-verify.sh --full \
@@ -138,18 +152,21 @@ cargo run --test data_consistency_checker -- \
 ## 🎯 Acceptance Criteria Checklist
 
 ### Functional Compatibility
+
 - [ ] **RPC Compatibility**: 100% method compatibility
 - [ ] **Data Format**: Complete consistency with Nitro
 - [ ] **Network Protocol**: Interoperable with Nitro nodes
 - [ ] **State Transitions**: Completely consistent results
 
 ### Performance Targets
+
 - [ ] **Throughput**: >2000 TPS (target 10x improvement)
 - [ ] **Latency**: <50ms P95 RPC response
 - [ ] **Memory**: <4GB usage
 - [ ] **Sync**: >3x Nitro sync speed
 
 ### Stability Requirements
+
 - [ ] **Reliability**: 24-hour crash-free operation
 - [ ] **Memory Management**: No memory leaks
 - [ ] **Error Handling**: Graceful exception handling
@@ -160,12 +177,14 @@ cargo run --test data_consistency_checker -- \
 After testing completion, you will receive:
 
 ### Auto-generated Reports
+
 - `reports/rpc_compatibility_*.json` - RPC compatibility details
 - `reports/performance_*.json` - Performance benchmark comparisons
 - `reports/consistency_*.json` - Data consistency results
 - `reports/summary_*.md` - Comprehensive test reports
 
 ### Real-time Monitoring
+
 - Real-time test progress display
 - Real-time performance metrics monitoring
 - Immediate error and warning feedback
@@ -176,6 +195,7 @@ After testing completion, you will receive:
 ### If Tests Fail
 
 1. **Check Logs**
+
 ```bash
 # View detailed error logs
 tail -f logs/arbitrum_reth.log
@@ -183,7 +203,8 @@ tail -f logs/rpc_test.log
 tail -f logs/performance_test.log
 ```
 
-2. **Manual Verification**
+1. **Manual Verification**
+
 ```bash
 # Check node status
 curl http://localhost:8548/health
@@ -194,7 +215,8 @@ curl -X POST -H "Content-Type: application/json" \
   http://localhost:8548
 ```
 
-3. **Restart Testing**
+1. **Restart Testing**
+
 ```bash
 # Clean up and retry
 ./scripts/quick-verify.sh --cleanup
@@ -204,12 +226,14 @@ curl -X POST -H "Content-Type: application/json" \
 ## 🚀 CI/CD Integration
 
 GitHub Actions will automatically run:
+
 - **Every PR**: Quick verification tests
 - **Every Push**: Basic compatibility tests  
 - **Daily at Dawn**: Complete compatibility tests
 - **Performance Regression**: Automatic performance degradation detection
 
 Activation method:
+
 ```bash
 git add .
 git commit -m "Add comprehensive testing framework"
@@ -220,7 +244,7 @@ git push origin main
 
 If you encounter any issues:
 
-1. **View Documentation**: `docs/testing-guide.md`
+1. **View Documentation**: `docs/testing-guide-en.md`
 2. **Check Checklist**: `docs/testing-checklist.md`
 3. **Run Diagnostics**: `./scripts/quick-verify.sh --help`
 4. **View Logs**: `logs/` directory
@@ -236,6 +260,7 @@ If you encounter any issues:
 ---
 
 **This testing framework will help you:**
+
 - ✅ Ensure 100% compatibility with Nitro
 - ✅ Verify 10x performance improvement targets
 - ✅ Provide detailed test reports

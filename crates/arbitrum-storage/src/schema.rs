@@ -24,6 +24,12 @@ pub enum TableType {
     L1Messages,
     /// Metadata and chain information
     Metadata,
+    /// Filter cursors: id -> last processed block
+    FilterCursors,
+    /// Logs index per block
+    LogsByBlock,
+    /// Filter last-seen timestamps for TTL handling
+    FilterLastSeen,
 }
 
 impl TableType {
@@ -39,6 +45,9 @@ impl TableType {
             TableType::Batches,
             TableType::L1Messages,
             TableType::Metadata,
+            TableType::FilterCursors,
+            TableType::LogsByBlock,
+            TableType::FilterLastSeen,
         ]
     }
 
@@ -54,6 +63,9 @@ impl TableType {
             TableType::Batches => "batches",
             TableType::L1Messages => "l1_messages",
             TableType::Metadata => "metadata",
+            TableType::FilterCursors => "filter_cursors",
+            TableType::LogsByBlock => "logs_by_block",
+            TableType::FilterLastSeen => "filter_last_seen",
         }
     }
 }
@@ -101,6 +113,10 @@ pub mod keys {
     /// Metadata key (string)
     #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
     pub struct MetadataKey(pub String);
+
+    /// Filter ID key (u64)
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize)]
+    pub struct FilterId(pub u64);
 
     // Implement From traits for easier usage
     impl From<u64> for BlockNumber {
@@ -162,6 +178,12 @@ pub mod keys {
             Self(key.to_string())
         }
     }
+
+    impl From<u64> for FilterId {
+        fn from(n: u64) -> Self {
+            Self(n)
+        }
+    }
 }
 
 /// Common metadata keys used in the database
@@ -189,7 +211,7 @@ mod tests {
     #[test]
     fn test_table_types() {
         let all_tables = TableType::all();
-        assert_eq!(all_tables.len(), 9);
+        assert_eq!(all_tables.len(), 12);
 
         assert_eq!(TableType::Blocks.name(), "blocks");
         assert_eq!(TableType::Transactions.name(), "transactions");

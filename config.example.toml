@@ -49,3 +49,12 @@ interval = 10
 [logging]
 level = "info"
 format = "human"
+
+[rpc]
+# HTTP JSON-RPC server settings
+port = 8548
+ws_port = 8549
+enable_ws = true
+cors_origins = ["*"]
+# TTL for log filters in milliseconds (0 uses built-in default of 300000ms)
+filter_ttl_ms = 0

@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
     "bin/arbitrum-reth",
+    "bin/arbitrum-parity",
     "crates/arbitrum-config",
     "crates/arbitrum-consensus",
     "crates/arbitrum-storage",

@@ -13,6 +13,7 @@ use arbitrum_storage::ArbitrumStorage;
 use arbitrum_validator::Validator;
 use eyre::Result;
 use reth_chainspec::MAINNET;
+use reth_integration::RethNodeHandle;
 use tokio::sync::RwLock;
 use tracing::{info, warn};
 
@@ -29,8 +30,8 @@ pub struct ArbitrumRethNode {
     inbox_tracker: Option<Arc<InboxTracker>>,
     validator: Option<Arc<Validator>>,
     is_running: Arc<RwLock<bool>>,
-    // For future Reth node integration
-    _node_handle_placeholder: Option<()>,
+    // Reth node handle (placeholder until full integration)
+    reth_handle: Option<RethNodeHandle>,
 }
 
 impl ArbitrumRethNode {
@@ -91,7 +92,7 @@ impl ArbitrumRethNode {
             inbox_tracker,
             validator,
             is_running: Arc::new(RwLock::new(false)),
-            _node_handle_placeholder: None,
+            reth_handle: None,
         })
     }
 
@@ -110,15 +111,12 @@ impl ArbitrumRethNode {
         info!("Creating Arbitrum node configuration...");
         let _chain_spec = MAINNET.clone();
 
-        // TODO: Full Reth SDK integration will be:
-        // let node_config = NodeConfig::new(chain_spec);
-        // let node_handle = NodeBuilder::new(node_config)
-        //     .with_types::<EthereumNode>()
-        //     .with_components(EthereumNode::components())
-        //     .launch()
-        //     .await?;
-
-        info!("Reth node configuration created (demo mode)");
+        // Launch minimal Reth node integration (scaffold)
+        let handle =
+            crate::reth_integration::launch_reth_node(&self.config, Some(self.storage.clone()))
+                .await?;
+        self.reth_handle = Some(handle);
+        info!("Reth node launched (scaffold mode)");
 
         // Start Arbitrum-specific components
         self.start_arbitrum_components().await?;
@@ -211,8 +209,12 @@ impl ArbitrumRethNode {
         self.stop_arbitrum_components().await?;
 
         // Stop the Reth node
-        // Future: Stop the actual Reth node handle
-        info!("Reth node stopped (demo mode)");
+        if let Some(handle) = &self.reth_handle {
+            handle.stop().await?;
+            info!("Reth node stopped (scaffold mode)");
+        } else {
+            info!("Reth node handle not present; nothing to stop");
+        }
 
         *running = false;
         info!("Arbitrum-Reth node stopped successfully");
@@ -256,8 +258,12 @@ impl ArbitrumRethNode {
 
     /// Wait for the node to finish
     pub async fn wait_for_shutdown(&self) -> Result<()> {
-        // Future: Wait for the actual Reth node to exit
-        info!("Waiting for node shutdown (demo mode)");
+        if let Some(handle) = &self.reth_handle {
+            handle.wait().await?;
+            info!("Reth node shutdown complete (scaffold mode)");
+        } else {
+            info!("No Reth handle; nothing to wait for");
+        }
         Ok(())
     }
 
@@ -271,10 +277,9 @@ impl ArbitrumRethNode {
         &self.config
     }
 
-    /// Get access to the Reth node handle (future implementation)
-    pub fn reth_handle(&self) -> Option<()> {
-        // Future: Return actual Reth node handle
-        None
+    /// Get access to the Reth node handle (scaffold)
+    pub fn reth_handle(&self) -> Option<&RethNodeHandle> {
+        self.reth_handle.as_ref()
     }
 
     /// Get current sync status

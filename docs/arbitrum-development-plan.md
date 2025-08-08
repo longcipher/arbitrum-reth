@@ -1,5 +1,8 @@
 # Arbitrum-Reth Development Plan: Technical Architecture
 
+> Note: This document is kept for historical context and may be out of date.
+> For the current, canonical plan and gap analysis, see: `design-implementation-parity-plan.md`.
+
 ## Executive Summary
 
 This document outlines a comprehensive plan to develop an Arbitrum-compatible Layer 2 node implementation using Reth as the foundation. The goal is to achieve 100% protocol compatibility with Arbitrum Nitro while leveraging Reth's high-performance execution engine to deliver 10x performance improvements.

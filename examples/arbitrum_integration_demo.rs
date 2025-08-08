@@ -213,7 +213,7 @@ async fn main() -> Result<()> {
     println!();
     
     println!("✨ Demo completed successfully!");
-    println!("📚 For more information, see docs/arbitrum-development-plan.md");
+    println!("📚 For more information, see docs/design-implementation-parity-plan.md");
     
     Ok(())
 }

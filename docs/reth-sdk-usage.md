@@ -1,5 +1,7 @@
 # Reth SDK Usage Guide
 
+Note: This guide shows practical examples. For architecture and component wiring with NodeBuilder, see also: reth-sdk-integration.md.
+
 This document explains how to properly use the latest Reth SDK in the Arbitrum-Reth project.
 
 ## Latest Reth SDK Architecture (2024)

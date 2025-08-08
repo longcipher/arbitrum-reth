@@ -1,0 +1,13 @@
+[
+  {
+    "method": "eth_getLogs",
+    "params": [{
+      "fromBlock": "0x0",
+      "toBlock": "latest",
+      "address": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "topics": [null]
+    }],
+    "compare": "result",
+    "sort_logs": true
+  }
+]

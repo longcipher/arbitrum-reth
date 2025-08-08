@@ -1,61 +1,48 @@
 # Documentation Index
 
-Welcome to the Arbitrum-Reth documentation! This directory contains comprehensive documentation for developers, operators, and contributors.
+Welcome to the Arbitrum-Reth documentation. This directory contains English-only documentation for developers, operators, and contributors.
 
 ## Quick Start
 
-- **[README.md](../README.md)** - Project overview and quick start guide
-- **[README.zh.md](../README.zh.md)** - Project overview and quick start guide (Chinese version)
-- **[Installation Guide](deployment.md#installation)** - How to install and run Arbitrum-Reth
+- [Project Overview](../README.md) — Workspace layout and quick start
+- [Install & Run](deployment.md#installation-methods) — Build from source or Docker
 
 ## For Developers
 
-- **[Architecture](architecture.md)** - System design and component overview
-- **[Reth SDK Integration](reth-sdk-integration.md)** - How to integrate with Reth SDK
-- **[Reth SDK Usage](reth-sdk-usage.md)** - Practical usage examples
-- **[Contributing Guide](../CONTRIBUTING.md)** - How to contribute to the project
-- **[Examples](../examples/)** - Code examples and usage patterns
+- [Architecture](architecture.md) — System design and components
+- [Reth SDK Integration](reth-sdk-integration.md) — Patterns and wiring
+- [Reth SDK Usage](reth-sdk-usage.md) — Practical examples
+- [Design, Gap Analysis, and Plan](design-implementation-parity-plan.md) — Canonical plan
+- [Contributing](../CONTRIBUTING.md) — How to contribute
+- [Examples](../examples/) — Usage patterns
 
 ## For Operators
 
-- **[Deployment Guide](deployment.md)** - Complete deployment and operational guide
-- **[Configuration](deployment.md#configuration)** - Configuration options and best practices
-- **[Monitoring](deployment.md#monitoring-and-observability)** - Monitoring and observability setup
-- **[Troubleshooting](deployment.md#troubleshooting)** - Common issues and solutions
+- [Deployment Guide](deployment.md) — Deployment and operations
+- [Configuration](deployment.md#configuration) — Options and best practices
+- [Monitoring](deployment.md#monitoring-and-observability) — Metrics and dashboards
+- [Troubleshooting](deployment.md#troubleshooting) — Common issues
+
+## Testing
+
+- [Testing Guide](testing-guide-en.md) — How to run unit/integration/parity tests
 
 ## Security
 
-- **[Security Policy](../SECURITY.md)** - Security guidelines and vulnerability reporting
-- **[Security Considerations](deployment.md#security-considerations)** - Operational security guide
+- [Security Policy](../SECURITY.md)
+- [Security Considerations](deployment.md#security-considerations)
 
 ## Reference
 
-- **[API Documentation](https://docs.rs/arbitrum-reth)** - Generated API documentation
-- **[Configuration Reference](deployment.md#configuration-reference)** - Complete configuration options
-- **[CLI Reference](deployment.md#cli-reference)** - Command-line interface documentation
-
-## Grant Application Materials
-
-This documentation package has been specifically prepared for grant applications and includes:
-
-- Comprehensive technical architecture documentation
-- Detailed implementation roadmap and milestones
-- Comparison with existing Arbitrum Nitro implementation
-- Professional development and deployment guides
-- Complete security and operational considerations
-
-## Community
-
-- **GitHub Discussions** - Questions and community discussions
-- **Issues** - Bug reports and feature requests
-- **Discord** - Real-time community chat (link to be provided)
+- API Docs (docs.rs, when published)
+- CLI reference: see node flags in the root README and examples in deployment guide
 
 ---
 
-For questions about the documentation, please:
-1. Check existing documentation first
-2. Search GitHub issues for similar questions
-3. Create a new issue with the `documentation` label
-4. Join our community discussions
+For documentation issues:
 
-Last updated: December 2024
+1) Check existing docs
+2) Search issues
+3) Open a new issue with the documentation label
+
+Last updated: August 2025

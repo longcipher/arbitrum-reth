@@ -67,6 +67,9 @@ pub struct RpcConfig {
     pub ws_port: u16,
     pub enable_ws: bool,
     pub cors_origins: Vec<String>,
+    /// TTL for JSON-RPC log filters in milliseconds. 0 => use built-in default.
+    #[serde(default)]
+    pub filter_ttl_ms: u64,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -157,13 +160,14 @@ impl Default for ArbitrumRethConfig {
             gas: GasConfig {
                 l1_base_fee: 20_000_000_000, // 20 gwei
                 l2_gas_price: 100_000_000,   // 0.1 gwei
-                price_update_interval: 10,    // 10 seconds
+                price_update_interval: 10,   // 10 seconds
             },
             rpc: RpcConfig {
-                port: 8545,
-                ws_port: 8546,
+                port: 8548,
+                ws_port: 8549,
                 enable_ws: true,
                 cors_origins: vec!["*".to_string()],
+                filter_ttl_ms: 0, // 0 => fallback to FiltersManager::DEFAULT_TTL_MILLIS
             },
         }
     }

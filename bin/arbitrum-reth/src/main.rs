@@ -7,10 +7,10 @@ use eyre::Result;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 /// Arbitrum-Reth: High-Performance Layer 2 Node
-/// 
+///
 /// A next-generation Arbitrum Layer 2 node implementation built with the Reth SDK.
 /// Provides 10x performance improvements while maintaining 100% protocol compatibility.
-/// 
+///
 /// Key Features:
 /// - Two-dimensional gas model (L2 execution + L1 data posting)
 /// - Arbitrum-specific precompiles (ArbSys, ArbGasInfo, NodeInterface)
@@ -86,11 +86,11 @@ enum Commands {
         l1_rpc: Option<String>,
 
         /// RPC server port
-        #[arg(long, default_value = "8545")]
+        #[arg(long, default_value = "8548")]
         rpc_port: u16,
 
         /// WebSocket server port
-        #[arg(long, default_value = "8546")]
+        #[arg(long, default_value = "8549")]
         ws_port: u16,
 
         /// Enable metrics server
@@ -158,7 +158,17 @@ async fn main() -> Result<()> {
             metrics,
             metrics_addr,
         } => {
-            run_node(config, sequencer, validator, l1_rpc, rpc_port, ws_port, metrics, metrics_addr).await
+            run_node(
+                config,
+                sequencer,
+                validator,
+                l1_rpc,
+                rpc_port,
+                ws_port,
+                metrics,
+                metrics_addr,
+            )
+            .await
         }
         Commands::Demo { comprehensive } => run_demo(comprehensive).await,
         Commands::Db { action } => handle_db_action(action, &cli.datadir).await,
@@ -167,11 +177,10 @@ async fn main() -> Result<()> {
 
 fn init_logging(log_level: &str, verbose: bool) -> Result<()> {
     let base_level = if verbose { "debug" } else { log_level };
-    
-    let filter = tracing_subscriber::EnvFilter::try_from_default_env()
-        .unwrap_or_else(|_| {
-            tracing_subscriber::EnvFilter::new(format!("{},arbitrum_reth=trace", base_level))
-        });
+
+    let filter = tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+        tracing_subscriber::EnvFilter::new(format!("{base_level},arbitrum_reth=trace"))
+    });
 
     tracing_subscriber::registry()
         .with(
@@ -207,6 +216,7 @@ async fn load_config(cli: &Cli) -> Result<ArbitrumRethConfig> {
     Ok(config)
 }
 
+#[allow(clippy::too_many_arguments)]
 async fn run_node(
     mut config: ArbitrumRethConfig,
     sequencer: bool,
@@ -220,14 +230,14 @@ async fn run_node(
     // Override config with CLI arguments
     config.node.sequencer_mode = sequencer;
     config.node.validator_mode = validator;
-    
+
     if let Some(l1_rpc_url) = l1_rpc {
         config.l1.rpc_url = l1_rpc_url;
     }
-    
+
     config.rpc.port = rpc_port;
     config.rpc.ws_port = ws_port;
-    
+
     if metrics {
         config.metrics.enable = true;
         config.metrics.addr = metrics_addr;
@@ -235,19 +245,24 @@ async fn run_node(
 
     tracing::info!("========================================");
     tracing::info!("🔧 Node Configuration:");
-    tracing::info!("  Mode: {}", 
-        if config.node.sequencer_mode { "Sequencer" } 
-        else if config.node.validator_mode { "Validator" } 
-        else { "Full Node" }
+    tracing::info!(
+        "  Mode: {}",
+        if config.node.sequencer_mode {
+            "Sequencer"
+        } else if config.node.validator_mode {
+            "Validator"
+        } else {
+            "Full Node"
+        }
     );
     tracing::info!("  L1 RPC: {}", config.l1.rpc_url);
     tracing::info!("  RPC Port: {}", config.rpc.port);
     tracing::info!("  WebSocket Port: {}", config.rpc.ws_port);
-    
+
     if config.metrics.enable {
         tracing::info!("  Metrics: {}", config.metrics.addr);
     }
-    
+
     tracing::info!("========================================");
 
     // Create and start the Arbitrum-Reth node
@@ -282,11 +297,11 @@ async fn run_node(
     tracing::info!("🔗 Connect to:");
     tracing::info!("  RPC:       http://localhost:{}", config.rpc.port);
     tracing::info!("  WebSocket: ws://localhost:{}", config.rpc.ws_port);
-    
+
     if config.metrics.enable {
         tracing::info!("  Metrics:   http://{}", config.metrics.addr);
     }
-    
+
     tracing::info!("");
     tracing::info!("Press Ctrl+C to stop the node gracefully");
 
@@ -296,7 +311,7 @@ async fn run_node(
 
     // Stop node gracefully
     node_handle.abort();
-    
+
     tracing::info!("✅ Arbitrum-Reth node stopped successfully");
     tracing::info!("Goodbye! 👋");
 
@@ -314,10 +329,10 @@ async fn run_demo(comprehensive: bool) -> Result<()> {
         tracing::info!("  • Cross-chain messaging simulation");
         tracing::info!("  • Performance comparisons");
         tracing::info!("  • Protocol compatibility verification");
-        
+
         // Run the comprehensive example
         std::process::Command::new("cargo")
-            .args(&["run", "--example", "arbitrum_integration_demo"])
+            .args(["run", "--example", "arbitrum_integration_demo"])
             .status()
             .map_err(|e| eyre::eyre!("Failed to run comprehensive demo: {}", e))?;
     } else {
@@ -329,7 +344,7 @@ async fn run_demo(comprehensive: bool) -> Result<()> {
     Ok(())
 }
 
-async fn handle_db_action(action: DbAction, datadir: &PathBuf) -> Result<()> {
+async fn handle_db_action(action: DbAction, datadir: &std::path::Path) -> Result<()> {
     match action {
         DbAction::Init => {
             tracing::info!("Initializing database in: {}", datadir.display());
@@ -354,35 +369,41 @@ async fn handle_db_action(action: DbAction, datadir: &PathBuf) -> Result<()> {
 
 async fn demo_arbitrum_reth_node() -> Result<()> {
     tracing::info!("🚀 Starting Arbitrum-Reth Node Demo");
-    
+
     // Use default config for demo
     let config = ArbitrumRethConfig::default();
-    
+
     // Create the node
     let _node = ArbitrumRethNode::new(config.clone()).await?;
-    
+
     // Run simple demo without ArbitrumDemo for now
     println!("🚀 Arbitrum-Reth Interactive Demo");
     println!("==================================");
-    
+
     println!("\n📊 Gas Pricing Demo");
     println!("-------------------");
-    println!("L1 Base Fee: {} gwei", config.gas.l1_base_fee / 1_000_000_000);
-    println!("L2 Gas Price: {} gwei", config.gas.l2_gas_price / 1_000_000_000);
-    
+    println!(
+        "L1 Base Fee: {} gwei",
+        config.gas.l1_base_fee / 1_000_000_000
+    );
+    println!(
+        "L2 Gas Price: {} gwei",
+        config.gas.l2_gas_price / 1_000_000_000
+    );
+
     println!("\n🌉 Cross-Chain Messaging Demo");
     println!("-----------------------------");
     println!("L1 Chain ID: {}", config.l1.chain_id);
     println!("L2 Chain ID: {}", config.l2.chain_id);
     println!("Cross-chain communication configured");
-    
+
     println!("\n⚙️  Configuration Demo");
     println!("----------------------");
     println!("Chain: {}", config.node.chain);
     println!("Data Directory: {:?}", config.node.datadir);
     println!("RPC Port: {}", config.rpc.port);
     println!("WebSocket Port: {}", config.rpc.ws_port);
-    
+
     println!("\n✅ Demo completed successfully!");
 
     tracing::info!("✅ Demo completed successfully!");
